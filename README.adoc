@@ -1,0 +1,30 @@
+== Reproducer for segmentation fault in Envoy wasm
+
+1. Build filter
++
+----
+bazel build :filter.wasm
+----
+2. Start current envoy-wasm (commit f6d0282f7ab42dfd215ae59112edbab3e70f2d3b) with the included configuration
++
+----
+envoy -c envoy.yaml
+----
+3. Send a request to Envoy:
++
+----
+curl localhost:8888 -Hwithheader:yes
+----
+
+Conditions under which Envoy does not segfault:
+
+1. Don't send any headers with the httpCall:
++
+----
+curl localhost:8888
+----
+2. Change the FQDN of externalserver in the envoy.yaml to a name that can be resolved via DNS
++
+----
+                    address: google.com
+----
